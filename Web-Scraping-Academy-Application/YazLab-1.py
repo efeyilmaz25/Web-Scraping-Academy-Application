@@ -354,7 +354,7 @@ if __name__ == "__main__":
     print(keywords_related_article)
     print(keyword_related_query)
     print(article_summaries)
-    #print(article_references) # output is so long.
+    print(article_references)
     print(article_quotes)
     print(article_url_address)
     print(article_pdfs)
