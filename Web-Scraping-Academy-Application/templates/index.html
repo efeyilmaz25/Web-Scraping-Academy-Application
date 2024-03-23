@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arxiv</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('th[data-sortable="true"]').click(function() {
+                var column = $(this).index();
+                var sortOrder = $(this).attr('data-sort-order') === 'asc' ? 'desc' : 'asc';
+                $(this).attr('data-sort-order', sortOrder);
+                $.get('/sort', {column: column, order: sortOrder}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+
+            $('#sortByCitations').click(function() {
+                $.get('/sort', {column: '10', order: 'desc'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleName').click(function() {
+                $.get('/sort', {column: '1', order: 'asc'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleId').click(function() {
+                $.get('/sort', {column: '0', order: 'asc'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleType1').click(function() {
+                $.get('/filter', {type: 'scientific article'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleType2').click(function() {
+                $.get('/filter', {type: 'research paper'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleType3').click(function() {
+                $.get('/filter', {type: 'conference'}, function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleAuthors').click(function() {
+                $.get('/sortByArticleAuthors', function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+            $('#sortByArticleKeywords').click(function() {
+                $.get('/sortByArticleKeywords', function(data) {
+                    $('#articleTable').html(data);
+                });
+            });
+
+
+
+            $('.show-more').click(function() {
+                $(this).closest('td').find('.short-text').hide();
+                $(this).hide();
+                $(this).closest('td').find('.full-text').show();
+                $(this).closest('td').find('.show-less').show();
+            });
+
+            $('.show-less').click(function() {
+                $(this).closest('td').find('.full-text').hide();
+                $(this).hide();
+                $(this).closest('td').find('.short-text').show();
+                $(this).closest('td').find('.show-more').show();
+            });
+
+        });
+    </script>
+    <style>
+        .full-text {
+            display: none;
+        }
+        .show-less {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Articles</h1>
+    <button id="sortByArticleId">Sort by number of article id</button>
+    <button id="sortByArticleName">Sort by article names</button>
+    <button id="sortByArticleAuthors">Sort by article authors</button>
+    <button id="sortByArticleType1">Sort by article type1</button>
+    <button id="sortByArticleType2">Sort by article type2</button>
+    <button id="sortByArticleType3">Sort by article type3</button>
+    <button id="sortByArticleKeywords">Sort by article keywords</button>
+    <button id="sortByCitations">Sort by number of citations</button>
+    <table border="1" id="articleTable">
+        <tr>
+            <th data-sortable="true" data-sort-order="asc">Article id</th>
+            <th data-sortable="true" data-sort-order="asc">Article name</th>
+            <th data-sortable="true" data-sort-order="asc">Article authors</th>
+            <th data-sortable="true" data-sort-order="asc">Article types</th>
+            <th data-sortable="true" data-sort-order="asc">Article publication date</th>
+            <th data-sortable="true" data-sort-order="asc">Article publisher name</th>
+            <th data-sortable="true" data-sort-order="asc">Article keywords</th>
+            <th data-sortable="true" data-sort-order="asc">Query keywords</th>
+            <th data-sortable="true" data-sort-order="asc">Article abstract</th>
+            <th data-sortable="true" data-sort-order="asc">Article references</th>
+            <th data-sortable="true" data-sort-order="asc">Article quotes</th>
+            <th data-sortable="true" data-sort-order="asc">Article url adress</th>
+            <th data-sortable="true" data-sort-order="asc">Article pdf adress</th>
+        </tr>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article["Article id"] }}</td>
+            <td>{{ article["Article name"] }}</td>
+            <td>{{ article["Article authors"] }}</td>
+            <td>{{ article["Article types"] }}</td>
+            <td>{{ article["Article publication date"] }}</td>
+            <td>{{ article["Article publisher name"] }}</td>
+            <td>{{ article["Article keywords"] }}</td>
+            <td>{{ article["Query keywords"] }}</td>
+            <td>
+                <div class="short-text">{{ article["Article abstract"] | truncate(50, True, '...') }}</div>
+                <div class="full-text">{{ article["Article abstract"] }}</div>
+                <button class="show-more">Show more</button>
+                <button class="show-less">Show less</button>
+            </td>
+            <td>
+                <div class="short-text">{{ article["Article references"] | truncate(50, True, '...') }}</div>
+                <div class="full-text">{{ article["Article references"] }}</div>
+                <button class="show-more">Show more</button>
+                <button class="show-less">Show less</button>
+            </td>
+            <td>{{ article["Article quotes"] }}</td>
+            <td><a href="{{ article['Article url adress'] }}">Link</a></td>
+            <td><a href="{{ article['Article pdf adress'] }}">PDF</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
